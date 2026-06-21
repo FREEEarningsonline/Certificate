@@ -5,599 +5,222 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Premium Certificate Generator</title>
     
-    <!-- Google Fonts for Elegant Typography -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Great+Vibes&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Great+Vibes&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&display=swap" rel="stylesheet">
     
     <!-- html2canvas for PNG Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         :root {
-            --purple-dark: #4A148C;
-            --purple-light: #6A1B9A;
-            --gold-primary: #D4AF37;
-            --gold-light: #F3E5AB;
-            --gold-dark: #8B6508;
-            --gray-dark: #212121;
-            --gray-light: #424242;
+            --purple-main: #58008a;
+            --purple-dark: #3a005c;
+            --gold-main: #cfa84a;
+            --gold-light: #ebd088;
+            --gray-main: #3d3d3d;
+            --gray-dark: #242424;
+            --maroon: #5a0e0e;
+            --text-dark: #222222;
             --white: #ffffff;
-            --sidebar-bg: #1e1e2f;
+            --sidebar-bg: #111118;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Montserrat', sans-serif; background-color: #e4e7ea; color: #333; overflow: hidden; }
 
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: #f4f6f8;
-            color: #333;
-            overflow: hidden;
-        }
-
-        /* --- App Layout --- */
-        .app-container {
-            display: flex;
-            height: 100vh;
-            width: 100vw;
-        }
+        /* --- Layout --- */
+        .app-container { display: flex; height: 100vh; width: 100vw; }
 
         /* --- Sidebar (Form) --- */
         .sidebar {
-            width: 380px;
+            width: 400px;
             background-color: var(--sidebar-bg);
             color: var(--white);
-            padding: 30px 25px;
+            padding: 25px;
             overflow-y: auto;
-            box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+            box-shadow: 5px 0 25px rgba(0,0,0,0.2);
             z-index: 100;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 18px;
         }
+
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
 
         .sidebar h2 {
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--gold-primary);
+            font-size: 20px;
+            color: var(--gold-light);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
-            padding-bottom: 10px;
+            letter-spacing: 1.5px;
+            border-bottom: 1px solid rgba(207, 168, 74, 0.3);
+            padding-bottom: 12px;
+            margin-bottom: 5px;
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
+        .form-section { background: #1c1c26; padding: 15px; border-radius: 8px; border: 1px solid #2d2d3d; }
+        .form-section-title { font-size: 12px; color: #8a8aab; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; font-weight: 700; }
 
-        .form-group label {
-            font-size: 13px;
-            font-weight: 500;
-            color: #a0a0b5;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-group label { font-size: 12px; font-weight: 500; color: #cfcfdf; }
+        .form-group input, .form-group textarea {
+            width: 100%; padding: 10px; background: #282838; border: 1px solid #44445c;
+            border-radius: 5px; color: #fff; font-family: 'Montserrat', sans-serif; font-size: 13px; transition: 0.2s;
         }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--purple-main); }
+        .form-group textarea { resize: vertical; min-height: 60px; }
 
-        .form-group input, 
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            background: #2a2a3c;
-            border: 1px solid #3d3d5c;
-            border-radius: 6px;
-            color: #fff;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 14px;
-            transition: all 0.3s ease;
+        /* File Upload Styling */
+        .file-upload-wrapper { display: flex; gap: 10px; align-items: center; }
+        .file-upload-wrapper input[type="file"] { display: none; }
+        .file-btn {
+            background: #33334d; color: white; padding: 8px 12px; border-radius: 5px;
+            font-size: 12px; cursor: pointer; border: 1px solid #555575; transition: 0.2s; flex: 1; text-align: center;
         }
+        .file-btn:hover { background: #444466; }
+        .clear-btn { background: #5a2a2a; color: white; padding: 8px 12px; border: none; border-radius: 5px; font-size: 12px; cursor: pointer; display: none;}
+        .clear-btn:hover { background: #7a3a3a; }
 
-        .form-group input:focus, 
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--purple-light);
-            box-shadow: 0 0 0 3px rgba(106, 27, 154, 0.2);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 10px;
-        }
-
+        /* Buttons */
+        .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
         .btn {
-            padding: 14px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-            font-family: 'Montserrat', sans-serif;
+            padding: 14px; border: none; border-radius: 6px; font-weight: 700; font-size: 13px;
+            cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
         }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--purple-light), var(--purple-dark));
-            color: white;
-        }
-
-        .btn-primary:hover {
-            box-shadow: 0 5px 15px rgba(74, 20, 140, 0.4);
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
-            transform: translateY(-2px);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid #555;
-            color: #ccc;
-        }
-
-        .btn-outline:hover {
-            background: #333;
-            color: white;
-        }
+        .btn-primary { background: linear-gradient(135deg, var(--purple-main), var(--purple-dark)); color: white; }
+        .btn-primary:hover { box-shadow: 0 4px 15px rgba(88, 0, 138, 0.4); transform: translateY(-1px); }
+        .btn-secondary { background: linear-gradient(135deg, var(--gold-main), #9e7f33); color: white; }
+        .btn-secondary:hover { box-shadow: 0 4px 15px rgba(207, 168, 74, 0.4); transform: translateY(-1px); }
 
         /* --- Preview Area --- */
         .preview-area {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 30px;
-            overflow: hidden;
-            background: radial-gradient(circle, #ffffff, #e0e5ec);
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            padding: 40px; overflow: hidden; background: radial-gradient(circle, #f8f9fa, #d1d5db);
         }
 
-        .certificate-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* --- Certificate Design (A4 Landscape Base: 1122x793) --- */
+        /* --- Certificate Base (A4 Landscape: 1122x793) --- */
         #certificate {
-            width: 1122px;
-            height: 793px;
-            background-color: var(--white);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            width: 1122px; height: 793px; background-color: var(--white);
+            position: relative; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.25);
             transform-origin: center center;
         }
 
-        /* Inner Borders */
-        .cert-border-outer {
-            position: absolute;
-            inset: 15px;
-            border: 1px solid rgba(0,0,0,0.1);
-            z-index: 10;
-            pointer-events: none;
-        }
+        /* --- Background Waves (SVGs) --- */
+        .bg-waves { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
 
-        .cert-border-inner {
-            position: absolute;
-            inset: 22px;
-            border: 2px solid var(--gold-primary);
-            z-index: 10;
-            pointer-events: none;
+        /* --- Right Ribbon & Medal --- */
+        .medal-container {
+            position: absolute; right: 80px; top: 0; width: 140px; height: 350px; z-index: 10;
+            display: flex; flex-direction: column; align-items: center; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
         }
-
-        /* Background Ribbons (Top Right Flowing to Bottom Left effect) */
-        .bg-layer {
-            position: absolute;
-            inset: 0;
-            z-index: 1;
-            pointer-events: none;
-            overflow: hidden;
+        
+        .medal-hanger { width: 90px; height: 25px; background: linear-gradient(to bottom, #f2da93, #cfa84a, #8c6f2a); border-radius: 4px; border: 1px solid #73591c; z-index: 3; position: relative; margin-top: 20px;}
+        .medal-hanger::before { content:''; position:absolute; top: 5px; bottom: 5px; left: 5px; right: 5px; border: 1px solid rgba(255,255,255,0.4); border-radius: 2px;}
+        
+        .medal-ribbon {
+            width: 76px; height: 160px; background: linear-gradient(to right, #480073, #6b00ab, #480073);
+            position: relative; top: -10px; z-index: 2; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 85%, 0 100%);
+            display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; padding-bottom: 20px;
+            border-left: 2px solid rgba(255,255,255,0.1); border-right: 2px solid rgba(0,0,0,0.2);
         }
-
-        /* Top Right Accents */
-        .shape-tr-gray {
-            position: absolute;
-            width: 900px;
-            height: 900px;
-            background: linear-gradient(135deg, var(--gray-light), var(--gray-dark));
-            border-radius: 50%;
-            top: -500px;
-            right: -400px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.3);
+        .medal-ribbon span { color: white; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 15px; line-height: 1.3; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+        
+        .medal-ring { width: 20px; height: 20px; border: 4px solid var(--gold-main); border-radius: 50%; position: relative; top: -20px; z-index: 1; background: #fff;}
+        
+        .medal-seal {
+            width: 130px; height: 130px; position: relative; top: -35px; z-index: 4;
+            display: flex; align-items: center; justify-content: center;
         }
-
-        .shape-tr-gold {
-            position: absolute;
-            width: 850px;
-            height: 850px;
-            background: linear-gradient(135deg, var(--gold-light), var(--gold-primary), var(--gold-dark));
-            border-radius: 50%;
-            top: -500px;
-            right: -450px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.2);
+        .medal-seal svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .medal-seal-content {
+            position: relative; z-index: 5; text-align: center; color: white;
+            font-family: 'Montserrat', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 85px; height: 85px; background: var(--purple-dark); border-radius: 50%; border: 2px dashed var(--gold-main);
         }
+        .medal-seal-content .best { font-size: 13px; font-weight: 800; letter-spacing: 1px; }
+        .medal-seal-content .award { font-size: 18px; font-weight: 800; color: var(--gold-light); margin: -2px 0; }
+        .medal-seal-content .year { font-size: 12px; font-weight: 700; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 2px; margin-top: 2px;}
 
-        /* Bottom Left Accents */
-        .shape-bl-gray {
-            position: absolute;
-            width: 900px;
-            height: 900px;
-            background: linear-gradient(135deg, var(--gray-light), var(--gray-dark));
-            border-radius: 50%;
-            bottom: -500px;
-            left: -400px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.3);
-        }
-
-        .shape-bl-gold {
-            position: absolute;
-            width: 850px;
-            height: 850px;
-            background: linear-gradient(135deg, var(--gold-light), var(--gold-primary), var(--gold-dark));
-            border-radius: 50%;
-            bottom: -500px;
-            left: -450px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.2);
-        }
-
-        /* Top Left Purple Corner (Logo area accent) */
-        .shape-tl-purple {
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle at top left, var(--purple-light), var(--purple-dark));
-            border-radius: 50%;
-            top: -250px;
-            left: -250px;
-        }
-
-        /* Right Side Purple Badge */
-        .badge-ribbon-container {
-            position: absolute;
-            right: 70px;
-            top: 0;
-            width: 110px;
-            height: 200px;
-            z-index: 15;
-            filter: drop-shadow(-3px 5px 8px rgba(0,0,0,0.3));
-        }
-
-        .badge-ribbon {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to bottom, var(--purple-light), var(--purple-dark));
-            clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 85%, 0 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-top: 10px solid var(--gold-primary);
-        }
-
-        .badge-ribbon span {
-            color: var(--white);
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            font-size: 15px;
-            letter-spacing: 4px;
-            writing-mode: vertical-rl;
-            transform: rotate(180deg);
-            padding-bottom: 20px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-        }
-
-        /* --- Certificate Content --- */
+        /* --- Content Layout --- */
         .cert-content {
-            position: relative;
-            z-index: 20;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            padding: 60px 80px;
+            position: relative; z-index: 5; width: 100%; height: 100%;
+            padding: 70px 90px; display: flex; flex-direction: column;
         }
 
-        /* Header (Logo + Academy Name) */
-        .cert-header {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
+        /* Header / Logo */
+        .cert-header { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
+        .logo-icon { width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; }
+        .academy-brand { display: flex; flex-direction: column; }
+        .academy-name-main { font-family: 'Montserrat', sans-serif; font-size: 28px; font-weight: 800; color: #0a1b3f; letter-spacing: 1px; line-height: 1; }
+        .academy-name-sub { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 700; color: var(--gold-main); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
 
-        .logo-placeholder {
-            width: 70px;
-            height: 70px;
-            background: var(--white);
-            border: 3px solid var(--gold-primary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        .logo-placeholder span {
-            font-family: 'Cinzel', serif;
-            font-size: 32px;
-            font-weight: 800;
-            color: var(--purple-dark);
-        }
-
-        .academy-name {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--gray-dark);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            max-width: 400px;
-        }
-
-        /* Main Titles */
-        .cert-title-area {
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        .cert-title-area h1 {
-            font-family: 'Cinzel', serif;
-            font-size: 68px;
-            font-weight: 800;
-            color: var(--gray-dark);
-            letter-spacing: 14px;
-            margin: 0 0 5px 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .cert-title-area h2 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--gold-dark);
-            letter-spacing: 10px;
-            margin: 0;
-            text-transform: uppercase;
-        }
+        /* Titles */
+        .title-area { margin-bottom: 25px; }
+        .main-title { font-family: 'Cinzel', serif; font-size: 65px; font-weight: 700; color: var(--maroon); letter-spacing: 3px; line-height: 1; margin-bottom: 5px; }
+        .sub-title { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 700; color: var(--gray-main); letter-spacing: 5px; }
 
         /* Student Area */
-        .cert-student-area {
-            text-align: center;
-            margin-top: 45px;
-        }
+        .student-area { margin-bottom: 20px; }
+        .presented-text { font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 500; color: var(--text-dark); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+        .student-name { font-family: 'Great Vibes', cursive; font-size: 85px; color: var(--purple-main); line-height: 1; margin-bottom: 5px; padding-left: 20px;}
+        .name-line { width: 70%; height: 2px; background: linear-gradient(to right, transparent, rgba(0,0,0,0.5) 10%, rgba(0,0,0,0.5) 90%, transparent); margin-bottom: 15px; }
+        .father-name-box { font-family: 'Montserrat', sans-serif; font-size: 16px; color: var(--text-dark); padding-left: 10px; }
+        .father-name-box span { font-weight: 700; color: var(--purple-main); }
 
-        .cert-student-area p {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 15px;
-            font-weight: 500;
-            color: #666;
-            margin: 0;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .student-name {
-            font-family: 'Great Vibes', cursive;
-            font-size: 72px;
-            color: var(--purple-dark);
-            margin: 15px 0;
-            font-weight: 400;
-            line-height: 1;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
-        }
-
-        .father-name {
-            font-weight: 700;
-            color: var(--gray-dark);
-        }
-
-        /* Course Area */
-        .cert-course-area {
-            text-align: center;
-            margin-top: 35px;
-            padding: 0 50px;
-        }
-
-        .cert-course-area .course-pre {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .course-name {
-            font-family: 'Cinzel', serif;
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--gray-dark);
-            margin: 0;
-            letter-spacing: 2px;
-        }
-
-        .course-desc {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 14px;
-            font-weight: 500;
-            color: #555;
-            margin: 20px auto 0 auto;
-            max-width: 750px;
-            line-height: 1.6;
-            font-style: italic;
-        }
+        /* Description Area */
+        .desc-area { padding-left: 40px; max-width: 650px; margin-top: 15px; }
+        .desc-text { font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 500; color: #111; line-height: 1.6; }
+        .course-highlight { display: block; font-size: 20px; font-weight: 800; color: var(--purple-main); margin: 6px 0; text-transform: uppercase; letter-spacing: 0.5px; }
 
         /* Footer Area */
-        .cert-footer {
-            margin-top: auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            padding: 0 20px;
+        .footer-area {
+            margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end;
+            padding-right: 120px; /* Leave space for medal */ padding-left: 50px; padding-bottom: 20px;
         }
 
-        .footer-box {
-            text-align: center;
-            width: 220px;
-        }
+        .footer-block { width: 200px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+        
+        .date-val { font-family: 'Montserrat', sans-serif; font-size: 15px; font-weight: 700; color: var(--text-dark); margin-bottom: 5px; height: 25px; display: flex; align-items: flex-end; }
+        
+        /* Signature Handling */
+        .sig-wrapper { height: 60px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 5px; width: 100%; position: relative;}
+        .sig-text { font-family: 'Great Vibes', cursive; font-size: 45px; color: var(--text-dark); line-height: 0.8; }
+        .sig-img { max-height: 60px; max-width: 180px; object-fit: contain; display: none; }
 
-        .footer-box .value {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--gray-dark);
-            margin: 0 0 8px 0;
-            height: 25px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-        }
+        .footer-line { width: 100%; height: 1px; background-color: var(--text-dark); margin-bottom: 5px; }
+        .footer-label { font-family: 'Montserrat', sans-serif; font-size: 12px; font-weight: 600; color: var(--text-dark); letter-spacing: 1px; }
+        .footer-sublabel { font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 500; color: #555; margin-top: 2px;}
 
-        .footer-box .signature-font {
-            font-family: 'Great Vibes', cursive;
-            font-size: 38px;
-            font-weight: 400;
-            color: var(--gray-dark);
-            transform: translateY(10px);
+        /* Bottom Center Seal */
+        .bottom-seal {
+            width: 110px; height: 110px; position: relative; margin: 0 20px;
         }
-
-        .footer-box .line {
-            height: 2px;
-            background: var(--gold-primary);
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        .footer-box .label {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 13px;
-            font-weight: 600;
-            color: #666;
-            margin: 8px 0 0 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Seal Placeholder */
-        .seal-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .seal {
-            width: 130px;
-            height: 130px;
-            background: radial-gradient(circle, var(--gold-light), var(--gold-primary), var(--gold-dark));
-            border-radius: 50%;
-            border: 2px dashed var(--white);
-            box-shadow: 0 0 0 6px var(--gold-primary), 0 10px 20px rgba(0,0,0,0.2);
-            display: flex;
+        .bottom-seal svg { width: 100%; height: 100%; animation: rotate-seal 20s linear infinite; }
+        @keyframes rotate-seal { 100% { transform: rotate(360deg); } }
+        .bottom-seal-inner {
+            position: absolute; inset: 18px; border-radius: 50%; border: 1px solid var(--purple-main);
+            display: flex; align-items: center; justify-content: center; background: white;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
         }
+        .bottom-seal-inner span { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 800; color: var(--purple-main); line-height: 1;}
+        .bottom-seal-inner .star { font-size: 10px; margin: 2px 0; }
 
-        .seal-text-top {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-bottom: 5px;
+        /* --- Print & Responsive --- */
+        @media (max-width: 1100px) {
+            .app-container { flex-direction: column; height: auto; overflow: auto; }
+            .sidebar { width: 100%; box-shadow: none; border-bottom: 2px solid #000; }
+            .preview-area { height: 700px; padding: 20px; }
         }
-
-        .seal-star {
-            font-size: 24px;
-            line-height: 1;
-            margin-bottom: 5px;
-        }
-
-        .seal-text-bottom {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 2px;
-        }
-
-        /* --- Responsiveness --- */
-        @media (max-width: 1024px) {
-            .app-container {
-                flex-direction: column;
-                height: auto;
-                overflow: auto;
-            }
-            .sidebar {
-                width: 100%;
-                height: auto;
-                box-shadow: none;
-                border-bottom: 1px solid #333;
-            }
-            .preview-area {
-                height: 600px;
-                padding: 20px;
-            }
-        }
-
-        /* --- Print CSS for perfect A4 Landscape --- */
         @media print {
-            @page {
-                size: A4 landscape;
-                margin: 0; 
-            }
-            body, html {
-                width: 100%;
-                height: 100%;
-                margin: 0;
-                padding: 0;
-                background: #ffffff;
-            }
-            .sidebar {
-                display: none !important;
-            }
-            .preview-area {
-                padding: 0 !important;
-                margin: 0 !important;
-                width: 100% !important;
-                height: 100% !important;
-                display: flex !important;
-                align-items: flex-start !important;
-                justify-content: flex-start !important;
-                background: none !important;
-            }
-            #certificate {
-                transform: scale(1) !important;
-                box-shadow: none !important;
-                position: absolute;
-                left: 0;
-                top: 0;
-                margin: 0;
-            }
-            .cert-border-outer {
-                border: none; /* Hide outer border for print to prevent edge cutoffs */
-            }
+            @page { size: A4 landscape; margin: 0; }
+            body, html { width: 100%; height: 100%; margin: 0; padding: 0; background: #fff; }
+            .sidebar { display: none !important; }
+            .preview-area { padding: 0 !important; margin: 0 !important; width: 100% !important; height: 100% !important; background: none !important; display: block !important; }
+            #certificate { transform: scale(1) !important; position: absolute; left: 0; top: 0; box-shadow: none !important; border: none !important; }
+            .bottom-seal svg { animation: none !important; }
         }
     </style>
 </head>
@@ -607,169 +230,282 @@
         
         <!-- Sidebar Form -->
         <div class="sidebar">
-            <h2>Certificate Settings</h2>
+            <h2>Editor Panel</h2>
             
-            <div class="form-group">
-                <label for="in-academy">Academy Name</label>
-                <input type="text" id="in-academy" value="Al-Huda Digital Skills Academy">
+            <div class="form-section">
+                <div class="form-section-title">Personal Information</div>
+                <div class="form-group">
+                    <label>Student Name</label>
+                    <input type="text" id="in-student" value="Nazim Mustafa">
+                </div>
+                <div class="form-group">
+                    <label>Father's Name</label>
+                    <input type="text" id="in-father" value="Ghulam Mustafa">
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="in-student">Student Name</label>
-                <input type="text" id="in-student" value="Nazim Mustafa">
+            <div class="form-section">
+                <div class="form-section-title">Course Details</div>
+                <div class="form-group">
+                    <label>Course Title</label>
+                    <input type="text" id="in-course" value="AMAZON FBA (PRIVATE LABEL)">
+                </div>
+                <div class="form-group">
+                    <label>Description Text</label>
+                    <textarea id="in-desc">conducted by Al-Huda Digital Skills Academy. During the course, the student has shown excellent performance and dedication. We wish him great success in his future endeavors.</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Date of Issue</label>
+                    <input type="text" id="in-date" value="15 May, 2024">
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="in-father">Father's Name</label>
-                <input type="text" id="in-father" value="Ghulam Mustafa">
+            <div class="form-section">
+                <div class="form-section-title">Medal Badge</div>
+                <div class="form-group">
+                    <label>Ribbon Text (Line 1 & 2)</label>
+                    <div style="display: flex; gap:10px;">
+                        <input type="text" id="in-medal-1" value="AMAZON">
+                        <input type="text" id="in-medal-2" value="FBA">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Award Year</label>
+                    <input type="text" id="in-medal-year" value="2024">
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="in-course">Course Name</label>
-                <input type="text" id="in-course" value="Amazon FBA (Private Label)">
-            </div>
-
-            <div class="form-group">
-                <label for="in-date">Date</label>
-                <input type="text" id="in-date" value="15 May 2024">
-            </div>
-
-            <div class="form-group">
-                <label for="in-desc">Description</label>
-                <textarea id="in-desc">"Has successfully completed the professional training course with excellent performance, dedication, and commitment. We wish him continued success in future endeavors."</textarea>
+            <div class="form-section">
+                <div class="form-section-title">Signature Settings</div>
+                <div class="form-group">
+                    <label>Director Name / Title</label>
+                    <input type="text" id="in-dir-name" value="Al-Huda Digital Skills Academy">
+                </div>
+                <div class="form-group">
+                    <label>Auto-Cursive Signature Text</label>
+                    <input type="text" id="in-sig-text" value="Faisal">
+                </div>
+                <div class="form-group">
+                    <label>Or Upload Actual Signature Image</label>
+                    <div class="file-upload-wrapper">
+                        <label class="file-btn" for="in-sig-img">Choose Image</label>
+                        <input type="file" id="in-sig-img" accept="image/png, image/jpeg">
+                        <button class="clear-btn" id="btn-clear-sig">Clear</button>
+                    </div>
+                </div>
             </div>
 
             <div class="btn-group">
-                <button id="btn-download" class="btn btn-primary">Download as PNG</button>
-                <button id="btn-print" class="btn btn-secondary">Print Certificate</button>
-                <button id="btn-reset" class="btn btn-outline">Reset Form</button>
+                <button id="btn-download" class="btn btn-primary">Download PNG</button>
+                <button id="btn-print" class="btn btn-secondary">Print A4</button>
             </div>
         </div>
 
         <!-- Live Preview Area -->
         <div class="preview-area">
-            <div class="certificate-wrapper" id="cert-wrapper">
+            
+            <div id="certificate">
                 
-                <!-- Certificate Element -->
-                <div id="certificate">
+                <!-- Background Layer (SVGs for perfect curves) -->
+                <svg class="bg-waves" viewBox="0 0 1122 793" preserveAspectRatio="none">
+                    <defs>
+                        <!-- Gradients to match the image precisely -->
+                        <linearGradient id="grad-gray" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#4a4a4a" />
+                            <stop offset="100%" stop-color="#1a1a1a" />
+                        </linearGradient>
+                        <linearGradient id="grad-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#ebd088" />
+                            <stop offset="50%" stop-color="#cfa84a" />
+                            <stop offset="100%" stop-color="#8c6f2a" />
+                        </linearGradient>
+                        <linearGradient id="grad-purple" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#6b00ab" />
+                            <stop offset="100%" stop-color="#3a005c" />
+                        </linearGradient>
+                    </defs>
+
+                    <!-- Top Right Swooshes -->
+                    <path d="M 400 0 C 700 150, 950 350, 1122 650 L 1122 0 Z" fill="url(#grad-gray)" />
+                    <path d="M 380 0 C 650 120, 900 320, 1122 600 L 1122 0 Z" fill="url(#grad-gold)" />
+                    <path d="M 360 0 C 600 90,  850 290, 1122 550 L 1122 0 Z" fill="url(#grad-purple)" />
                     
-                    <!-- Inner Borders -->
-                    <div class="cert-border-outer"></div>
-                    <div class="cert-border-inner"></div>
+                    <!-- Bottom Left Swooshes -->
+                    <path d="M 0 350 C 200 600, 450 793, 750 793 L 0 793 Z" fill="url(#grad-gray)" />
+                    <path d="M 0 380 C 180 620, 400 793, 700 793 L 0 793 Z" fill="url(#grad-gold)" />
+                    <path d="M 0 410 C 150 640, 350 793, 650 793 L 0 793 Z" fill="url(#grad-purple)" />
+                </svg>
 
-                    <!-- Background Graphics -->
-                    <div class="bg-layer">
-                        <div class="shape-tl-purple"></div>
-                        
-                        <div class="shape-tr-gray"></div>
-                        <div class="shape-tr-gold"></div>
-                        
-                        <div class="shape-bl-gray"></div>
-                        <div class="shape-bl-gold"></div>
+                <!-- Right Side Medal Graphic -->
+                <div class="medal-container">
+                    <div class="medal-hanger"></div>
+                    <div class="medal-ribbon">
+                        <span id="out-medal-1">AMAZON</span>
+                        <span id="out-medal-2">FBA</span>
                     </div>
-
-                    <!-- Right side decorative badge -->
-                    <div class="badge-ribbon-container">
-                        <div class="badge-ribbon">
-                            <span>CERTIFIED PRO</span>
+                    <div class="medal-ring"></div>
+                    <div class="medal-seal">
+                        <!-- Sunburst Polygon -->
+                        <svg viewBox="0 0 100 100">
+                            <polygon points="50,0 55,10 65,8 68,18 78,19 78,29 88,33 84,42 93,48 87,56 93,64 84,69 88,78 78,82 78,92 68,93 65,103 55,100 50,110 45,100 35,103 32,93 22,92 22,82 12,78 16,69 7,64 13,56 7,48 16,42 12,33 22,29 22,19 32,18 35,8 45,10" fill="url(#grad-gold)"/>
+                            <polygon points="50,3 54,12 63,10 66,19 75,21 75,30 84,33 80,42 88,48 83,56 88,64 80,69 84,78 75,80 75,89 66,91 63,100 54,98 50,107 46,98 37,100 34,91 25,89 25,80 16,78 20,69 12,64 17,56 12,48 20,42 16,33 25,30 25,21 34,19 37,10 46,12" fill="#242424"/>
+                        </svg>
+                        <div class="medal-seal-content">
+                            <span class="best">BEST</span>
+                            <span class="award">AWARD</span>
+                            <span class="year" id="out-medal-year">2024</span>
                         </div>
-                    </div>
-
-                    <!-- Certificate Content -->
-                    <div class="cert-content">
-                        
-                        <!-- Header -->
-                        <div class="cert-header">
-                            <div class="logo-placeholder">
-                                <span>A</span>
-                            </div>
-                            <div class="academy-name" id="out-academy">Al-Huda Digital Skills Academy</div>
-                        </div>
-
-                        <!-- Main Title -->
-                        <div class="cert-title-area">
-                            <h1>CERTIFICATE</h1>
-                            <h2>OF ACHIEVEMENT</h2>
-                        </div>
-
-                        <!-- Student Section -->
-                        <div class="cert-student-area">
-                            <p>This certificate is proudly presented to</p>
-                            <h3 class="student-name" id="out-student">Nazim Mustafa</h3>
-                            <p>Son/Daughter of <span class="father-name" id="out-father">Ghulam Mustafa</span></p>
-                        </div>
-
-                        <!-- Course Section -->
-                        <div class="cert-course-area">
-                            <p class="course-pre">for successfully completing the professional training course</p>
-                            <h4 class="course-name" id="out-course">Amazon FBA (Private Label)</h4>
-                            <p class="course-desc" id="out-desc">"Has successfully completed the professional training course with excellent performance, dedication, and commitment. We wish him continued success in future endeavors."</p>
-                        </div>
-
-                        <!-- Footer Section -->
-                        <div class="cert-footer">
-                            <div class="footer-box">
-                                <p class="value" id="out-date">15 May 2024</p>
-                                <div class="line"></div>
-                                <p class="label">Date</p>
-                            </div>
-
-                            <div class="seal-container">
-                                <div class="seal">
-                                    <span class="seal-text-top">Official</span>
-                                    <span class="seal-star">★</span>
-                                    <span class="seal-text-bottom">SEAL</span>
-                                </div>
-                            </div>
-
-                            <div class="footer-box">
-                                <p class="value signature-font">Director</p>
-                                <div class="line"></div>
-                                <p class="label">Director Signature</p>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
-                <!-- End Certificate -->
 
+                <!-- Main Content Area -->
+                <div class="cert-content">
+                    
+                    <!-- Logo & Academy Name -->
+                    <div class="cert-header">
+                        <div class="logo-icon">
+                            <svg viewBox="0 0 100 100" width="60" height="60">
+                                <!-- Book -->
+                                <path d="M50,85 C35,75 15,80 10,80 L10,50 C15,50 35,45 50,55 C65,45 85,50 90,50 L90,80 C85,80 65,75 50,85 Z" fill="none" stroke="#0a1b3f" stroke-width="6" stroke-linejoin="round"/>
+                                <path d="M50,55 L50,85" stroke="#0a1b3f" stroke-width="6"/>
+                                <!-- Mosque Dome/Arch -->
+                                <path d="M25,45 C25,15 50,5 50,5 C50,5 75,15 75,45" fill="none" stroke="#0a1b3f" stroke-width="6"/>
+                                <!-- Center Pillar -->
+                                <rect x="47" y="25" width="6" height="25" fill="#cfa84a"/>
+                                <rect x="35" y="32" width="5" height="15" fill="#cfa84a"/>
+                                <rect x="60" y="32" width="5" height="15" fill="#cfa84a"/>
+                                <!-- Top Crescent/Star Idea -->
+                                <circle cx="50" cy="15" r="3" fill="#cfa84a"/>
+                            </svg>
+                        </div>
+                        <div class="academy-brand">
+                            <span class="academy-name-main">AL-HUDA</span>
+                            <span class="academy-name-sub">DIGITAL SKILLS ACADEMY</span>
+                        </div>
+                    </div>
+
+                    <!-- Titles -->
+                    <div class="title-area">
+                        <h1 class="main-title">CERTIFICATE</h1>
+                        <h2 class="sub-title">OF ACHIEVEMENT</h2>
+                    </div>
+
+                    <!-- Student Info -->
+                    <div class="student-area">
+                        <div class="presented-text">This certificate is proudly presented to</div>
+                        <div class="student-name" id="out-student">Nazim Mustafa</div>
+                        <div class="name-line"></div>
+                        <div class="father-name-box">Father's Name: <span id="out-father">Ghulam Mustafa</span></div>
+                    </div>
+
+                    <!-- Course Info -->
+                    <div class="desc-area">
+                        <div class="desc-text">
+                            has successfully completed the professional training course in
+                            <span class="course-highlight" id="out-course">AMAZON FBA (PRIVATE LABEL)</span>
+                            <span id="out-desc">conducted by Al-Huda Digital Skills Academy. During the course, the student has shown excellent performance and dedication. We wish him great success in his future endeavors.</span>
+                        </div>
+                    </div>
+
+                    <!-- Footer (Date, Seal, Signature) -->
+                    <div class="footer-area">
+                        <!-- Date -->
+                        <div class="footer-block">
+                            <div class="date-val" id="out-date">15 May, 2024</div>
+                            <div class="footer-line"></div>
+                            <div class="footer-label">DATE</div>
+                        </div>
+
+                        <!-- Center Circular Seal -->
+                        <div class="bottom-seal">
+                            <svg viewBox="0 0 100 100">
+                                <path id="curve" d="M 50, 50 m -40, 0 a 40,40 0 1,1 80,0 a 40,40 0 1,1 -80,0" fill="transparent" />
+                                <text width="500" fill="#58008a" font-family="'Montserrat', sans-serif" font-weight="700" font-size="10.5" letter-spacing="1">
+                                    <textPath href="#curve" startOffset="5%">
+                                        AL-HUDA DIGITAL SKILLS ACADEMY ★
+                                    </textPath>
+                                </text>
+                            </svg>
+                            <div class="bottom-seal-inner">
+                                <span class="star">★</span>
+                                <span>SEAL</span>
+                                <span class="star">★</span>
+                            </div>
+                        </div>
+
+                        <!-- Signature -->
+                        <div class="footer-block">
+                            <div class="sig-wrapper">
+                                <img id="out-sig-img" class="sig-img" alt="Signature">
+                                <div id="out-sig-text" class="sig-text">Faisal</div>
+                            </div>
+                            <div class="footer-line"></div>
+                            <div class="footer-label">DIRECTOR</div>
+                            <div class="footer-sublabel" id="out-dir-name">Al-Huda Digital Skills Academy</div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
-
     </div>
 
     <!-- JavaScript Logic -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
-            // Map inputs to outputs
-            const fields = ['academy', 'student', 'father', 'course', 'date', 'desc'];
-            
-            // Store default values for reset
-            const defaultValues = {};
-            fields.forEach(field => {
-                const input = document.getElementById(`in-${field}`);
-                defaultValues[field] = input.value;
-            });
+            // Text inputs mapping
+            const bindings = [
+                { in: 'in-student', out: 'out-student' },
+                { in: 'in-father', out: 'out-father' },
+                { in: 'in-course', out: 'out-course' },
+                { in: 'in-desc', out: 'out-desc' },
+                { in: 'in-date', out: 'out-date' },
+                { in: 'in-medal-1', out: 'out-medal-1' },
+                { in: 'in-medal-2', out: 'out-medal-2' },
+                { in: 'in-medal-year', out: 'out-medal-year' },
+                { in: 'in-dir-name', out: 'out-dir-name' },
+                { in: 'in-sig-text', out: 'out-sig-text' }
+            ];
 
-            // Setup Live Preview updating
-            fields.forEach(field => {
-                const input = document.getElementById(`in-${field}`);
-                const output = document.getElementById(`out-${field}`);
-                
+            // Setup live text updates
+            bindings.forEach(bind => {
+                const input = document.getElementById(bind.in);
+                const output = document.getElementById(bind.out);
                 input.addEventListener('input', (e) => {
                     output.innerText = e.target.value;
                 });
             });
 
-            // Reset functionality
-            document.getElementById('btn-reset').addEventListener('click', () => {
-                fields.forEach(field => {
-                    const input = document.getElementById(`in-${field}`);
-                    const output = document.getElementById(`out-${field}`);
-                    input.value = defaultValues[field];
-                    output.innerText = defaultValues[field];
-                });
+            // Signature Image Upload Logic
+            const sigInput = document.getElementById('in-sig-img');
+            const sigImgOut = document.getElementById('out-sig-img');
+            const sigTextOut = document.getElementById('out-sig-text');
+            const btnClearSig = document.getElementById('btn-clear-sig');
+            const sigLabel = document.querySelector('.file-btn');
+
+            sigInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        sigImgOut.src = event.target.result;
+                        sigImgOut.style.display = 'block';
+                        sigTextOut.style.display = 'none';
+                        btnClearSig.style.display = 'block';
+                        sigLabel.innerText = "Change Image";
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            btnClearSig.addEventListener('click', () => {
+                sigInput.value = '';
+                sigImgOut.src = '';
+                sigImgOut.style.display = 'none';
+                sigTextOut.style.display = 'block';
+                btnClearSig.style.display = 'none';
+                sigLabel.innerText = "Choose Image";
             });
 
             // Print functionality
@@ -777,37 +513,38 @@
                 window.print();
             });
 
-            // Download functionality
+            // Download PNG functionality
             document.getElementById('btn-download').addEventListener('click', async () => {
                 const btn = document.getElementById('btn-download');
                 const originalText = btn.innerText;
                 
-                // Show loading state
-                btn.innerText = "Generating PNG...";
+                btn.innerText = "Processing...";
                 btn.disabled = true;
 
                 try {
-                    // Ensure fonts are loaded before capturing
                     await document.fonts.ready;
-                    
                     const cert = document.getElementById('certificate');
                     
-                    // Temporarily remove scaling for crisp export
-                    const currentTransform = cert.style.transform;
+                    // Remove scale for export
+                    const originalTransform = cert.style.transform;
                     cert.style.transform = 'scale(1)';
+                    
+                    // Temporarily stop CSS animation on seal for clean capture
+                    const sealSvg = document.querySelector('.bottom-seal svg');
+                    sealSvg.style.animation = 'none';
 
-                    // Capture Canvas
                     const canvas = await html2canvas(cert, {
-                        scale: 2, // 2x resolution for high quality
+                        scale: 2, // High resolution
                         backgroundColor: '#ffffff',
                         useCORS: true,
                         logging: false
                     });
 
-                    // Restore scaling
-                    cert.style.transform = currentTransform;
+                    // Restore scale & animation
+                    cert.style.transform = originalTransform;
+                    sealSvg.style.animation = 'rotate-seal 20s linear infinite';
 
-                    // Trigger download
+                    // Download
                     const studentName = document.getElementById('in-student').value.replace(/\s+/g, '_') || 'Student';
                     const link = document.createElement('a');
                     link.download = `Certificate_${studentName}.png`;
@@ -815,38 +552,25 @@
                     link.click();
 
                 } catch (error) {
-                    console.error("Error generating certificate image:", error);
-                    alert("An error occurred while generating the image. Please try again.");
+                    console.error(error);
+                    alert("Error generating certificate image.");
                 } finally {
-                    // Restore button state
                     btn.innerText = originalText;
                     btn.disabled = false;
                 }
             });
 
-            // Responsive Scaling for Preview Area
+            // Responsive Scaling function for Preview Box
             function scaleCertificate() {
                 const wrapper = document.querySelector('.preview-area');
                 const cert = document.getElementById('certificate');
+                const availableWidth = wrapper.clientWidth - 60;
+                const availableHeight = wrapper.clientHeight - 60;
                 
-                // Calculate available space with some padding
-                const availableWidth = wrapper.clientWidth - 40;
-                const availableHeight = wrapper.clientHeight - 40;
-                
-                // Base dimensions of the certificate
-                const baseWidth = 1122;
-                const baseHeight = 793;
-                
-                // Calculate scale to fit either width or height
-                const scaleWidth = availableWidth / baseWidth;
-                const scaleHeight = availableHeight / baseHeight;
-                const scale = Math.min(scaleWidth, scaleHeight, 1); // Max scale is 1
-                
-                // Apply scaling using transform
+                const scale = Math.min(availableWidth / 1122, availableHeight / 793, 1);
                 cert.style.transform = `scale(${scale})`;
             }
 
-            // Init scaling
             window.addEventListener('resize', scaleCertificate);
             scaleCertificate();
         });
